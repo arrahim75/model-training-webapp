@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>YOLO Web Launcher</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>YOLOv7 Training</h1>
+    <div class="tabs">
+      <button class="tab-button active" data-tab="train">Train</button>
+      <button class="tab-button" data-tab="test">Test</button>
+    </div>
+
+    <!-- TRAIN FORM -->
+    <div class="tab-content active" id="train">
+      <!-- TRAIN FORM (inside <div id="train">) -->
+      <form id="train-form" action="javascript:void(0);" method="get">
+        <input type="hidden" name="mode" value="train">
+
+        <!-- File inputs for paths -->
+        <label>Weights:
+          <div class="file-text-group">
+            <input type="text" name="weights_path" placeholder="yolo7.pt">
+            <input type="file" name="weights_file" accept=".pt">
+          </div>
+        </label>
+        
+        <label>Model config:
+          <div class="file-text-group">
+            <input type="text" name="cfg_path" placeholder="model.yaml">
+            <input type="file" name="cfg_file" accept=".yaml">
+          </div>
+        </label>
+        
+        <label>Data:
+          <div class="file-text-group">
+            <input type="text" name="data_path" placeholder="data/coco.yaml">
+            <input type="file" name="data_file" accept=".yaml">
+          </div>
+        </label>
+        
+        <label>Hyparameters:
+          <div class="file-text-group">
+            <input type="text" name="hyp_path" placeholder="data/hyp.scratch.p5.yaml">
+            <input type="file" name="hyp_file" accept=".yaml">
+          </div>
+        </label>
+
+        <!-- img-size as two controls -->
+        <fieldset>
+          <legend>Image sizes</legend>
+          <label>Train size:
+            <input type="number" name="img_size_train" value="640" min="10" step="10">
+          </label>
+          <label>Test size:
+            <input type="number" name="img_size_test" value="640" min="10" step="10">
+          </label>
+        </fieldset>
+        
+        <fieldset>
+          <!-- Numeric with spinner -->
+          <div class="main-3-row">
+            <div class="main-3-column">
+              <label class="label-input-1">Epochs:
+                <input type="number" name="epochs" value="300" min="10" step="10">
+              </label>
+              <label class="label-input-1">Batch size:
+                <input type="number" name="batch_size" value="8" min="1" step="1">
+              </label>
+              <label class="label-input-1">Device:
+                <input type="text" name="device" placeholder="0 or cpu">
+              </label>
+            </div>
+            <div class="main-3-column">
+              <label class="label-input-2">Workers:
+                <input type="number" name="workers" value="8" min="1" step="1">
+              </label>
+              <label class="label-input-2">Project:
+                <input type="text" name="project" value="runs/train">
+              </label>
+              <label class="label-input-2">Name:
+                <input type="text" name="name" value="exp">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Boolean flags -->
+        <fieldset class="grid-col">
+          <legend>Additional Setting</legend>
+          <label><input type="checkbox" name="rect"> Rectangular training</label>
+          <label><input type="checkbox" name="resume"> Resume</label>
+          <label><input type="checkbox" name="nosave"> No save</label>
+          <label><input type="checkbox" name="notest"> No test</label>
+          <label><input type="checkbox" name="noautoanchor"> Disable autoanchor</label>
+          <label><input type="checkbox" name="evolve"> Evolve hyp.</label>
+          <label><input type="checkbox" name="cache_images"> Cache images</label>
+          <label><input type="checkbox" name="image_weights"> Image weights</label>
+          <label><input type="checkbox" name="multi_scale"> Multi-scale</label>
+          <label><input type="checkbox" name="single_cls"> Single class</label>
+          <label><input type="checkbox" name="adam"> Use Adam</label>
+          <label><input type="checkbox" name="sync_bn"> SyncBatchNorm</label>
+          <label><input type="checkbox" name="exist_ok"> Exist OK</label>
+          <label><input type="checkbox" name="quad"> Quad loader</label>
+          <label><input type="checkbox" name="linear_lr"> Linear LR</label>
+          <label><input type="checkbox" name="upload_dataset"> Upload dataset</label>
+          <label><input type="checkbox" name="v5_metric"> v5 metric</label>
+        </fieldset>
+
+        <fieldset class="grid-row-text">
+          <div class="grid-col-text">
+          <!-- More numeric/text inputs -->
+            <label class="label-input-1">Bucket:
+              <input type="text" name="bucket" placeholder="gs://my-bucket">
+            </label>
+            <label class="label-input-1">Entity:
+              <input type="text" name="entity" placeholder="wandb-entity">
+            </label>
+            <label class="label-input-1">Label smoothing:
+              <input type="number" name="label_smoothing" value="0.0" min="0" step="0.01">
+            </label>
+            <label class="label-input-1">BBox interval:
+              <input type="number" name="bbox_interval" value="-1" step="1">
+            </label>
+          </div>
+          <div class="grid-col-text">
+            <label class="label-input-2">Save period:
+              <input type="number" name="save_period" value="-1" step="1">
+            </label>
+            <label class="label-input-2">Artifact alias:
+              <input type="text" name="artifact_alias" value="latest">
+            </label>
+            <label class="label-input-2">Freeze layers (space-sep):
+              <input type="text" name="freeze" placeholder="0 1 2">
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="submit">Start Training</button>
+      </form>
+      <!-- New output container -->
+      <div id="output-container" class="output-container"></div>
+    </div>
+
+    <!-- TEST FORM -->
+    <div class="tab-content" id="test">
+      <form method="post">
+        <input type="hidden" name="mode" value="test">
+        <label>Weights (comma separated): <input type="text" name="weights" value="yolov7.pt"></label>
+        <label>Data YAML: <input type="text" name="data" value="data/coco.yaml"></label>
+        <label>Batch Size: <input type="number" name="batch_size" value="32"></label>
+        <label>Image Size: <input type="number" name="img_size" value="640"></label>
+        <label>Conf Threshold: <input type="number" step="0.001" name="conf_thres" value="0.001"></label>
+        <label>IOU Threshold: <input type="number" step="0.01" name="iou_thres" value="0.6"></label>
+        <label>Task:
+          <select name="task">
+            <option value="val">val</option>
+            <option value="test">test</option>
+            <option value="train">train</option>
+            <option value="speed">speed</option>
+            <option value="study">study</option>
+          </select>
+        </label>
+        <label><input type="checkbox" name="save_txt"> Save TXT</label>
+        <label><input type="checkbox" name="save_json"> Save JSON</label>
+        <button type="submit">Run Test</button>
+      </form>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, msg in messages %}
+          <li class="{{ category }}">{{ msg }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <script src="/static/js/script.js" defer></script>
+  <script src="/static/js/train.js" defer></script>
+</body>
+</html>
